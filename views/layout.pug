@@ -1,0 +1,148 @@
+doctype
+html
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=no")
+    meta(http-equiv="X-UA-Compatible", content="ie=edge")
+    title= title
+    link(rel='stylesheet' href='/main.css')
+    script(src="https://code.jquery.com/jquery-3.4.1.min.js")
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css")
+  body
+    .container
+      .profile-wrap
+        .profile
+          if user && user.id
+            .user-name= '안녕하세요! ' + user.nick + '님'
+            input#my-id(type='hidden' value= user.id)
+            a#my-profile.btn(href=`/profile/${user.id}`) 내 프로필
+            a#logout.btn(href='/auth/logout') 로그아웃
+            a.btn(href="/") 홈으로
+          else
+            form#login-form(action="/auth/login" method='post')
+              .input-group
+                label(for="email") 이메일
+                input#email(type="email" name="email" required autofocus)
+              .input-group
+                label(for="password") 비밀번호
+                input#password(type="password" name="password" required)
+              if loginError
+                .error-message= loginError
+              a#join.btn(href="/join") 회원가입
+              button#login.btn(type='submit') 로그인
+              a#kakao.btn(href="/auth/kakao") 카카오톡
+        if user && user.id
+          form.form(action="/searchplace")
+            input#search-test(type="text" name="placename" placeholder="등록된 장소 검색")
+            button.btn 검색
+        if errorplace
+          .place-error-count= `${errorplace.length}개의 에러 게시글이 있습니다`
+          input#place-count(type="hidden" value=errorplace.length)
+          for eachplace in errorplace
+            .error-place
+              input#place-id(type="hidden" value=eachplace.id)
+              .error-place-text 에러처리를 위해 삭제버튼을 눌러주세요
+        if writepost
+          form#post-place(action="/post/place" method='post')
+            .post-group
+              label(for="post-place-name") 장소
+              #post-place-name= writepost.name
+              input#place-name(type="hidden" name='placeName' value=writepost.name)
+              input#place-ident(type="hidden" name='placeIdent' value=writepost.id)
+            .post-group
+              label(for="post-place-content") 내용
+              textarea#post-place-text(name='placeContent', cols="20", rows="10", maxlength=150, required)
+            .post-group
+              #post-place-star 평점
+              .starRev
+                span.starR
+                span.starR
+                span.starR
+                span.starR
+                span.starR
+                input#star-count(type="hidden" name='star')
+            .img-preview
+              img#img-preview(src='' style='display: none;' width='250' alt='미리보기')
+              input#img-url(type='hidden' name='url')
+            div
+              label#img-label(for="img") 사진업로드
+              input#img(type='file' accept='image/*')
+              button.btn(type='submit') 등록
+              a.btn(href=`/delete/cancel/${writepost.id}`) 취소
+        if showPlaces
+          for showPlace in showPlaces
+            #place-list
+              .place-group
+                label(for="")
+                #list-place-name= showPlace.name
+              .place-group
+                label(for="") 평점
+                #list-place-rate= `${showPlace.rate} / 5`
+              .place-group
+                label(for="") 좋아요
+                #list-place-like= `${showPlace.like} 개`
+              .place-group
+                label(for="") 사진
+                img#list-place-pic(src=showPlace.img, alt="장소사진")
+                input#list-place-writer(type="hidden" value=showPlace.userId)
+              if user && user.id
+                a.btn#list-place-button(href=`/reply/${showPlace.name}/${showPlace.userId}`) 댓글쓰기
+                
+      block content
+
+      script.
+        $('.starRev span').click(function(){
+          $(this).parent().children('span').removeClass('on');
+          $(this).addClass('on').prevAll('span').addClass('on');
+          return false;
+        });
+      script.
+        $('.starRev span').click(function(){
+          var x = document.querySelectorAll('.on')
+          console.log(x.length, typeof(x.length));
+          document.getElementById('star-count').value = x.length;
+        });
+      script.
+        if (document.getElementById('img')) {//여기가 이미지를 업로드 하는 부분(여기는 사진만 올리는 부분임 글은 아님)
+          document.getElementById('img').addEventListener('change', function (e) {//change이벤트는 바뀌면 발생된다
+            var formData = new FormData();
+            formData.append('img', this.files[0]);
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+              if (xhr.status === 200) {
+                var url = JSON.parse(xhr.responseText).url;
+                document.getElementById('img-url').value = url;
+                document.getElementById('img-preview').src = url;
+                document.getElementById('img-preview').style.display = 'inline';
+              } else {
+                console.error(xhr.responseText);
+              }
+            };
+            xhr.open('POST', '/post/img');
+            xhr.send(formData);
+          });
+        }
+      script.
+        if(document.getElementById('star-count').value === ''){ //평점 입력을 위한 코드
+          document.getElementById('star-count').value = 0;
+        }
+      script.
+        if(document.getElementById('place-count').value >= 2){//굳이 필요는 없지만 게시글 복사 방지를 위한 코드
+          let div = document.querySelectorAll('#place-id');
+          div.forEach(function(ex1){
+            var cancelid = ex1.value
+            let cancelbtn = document.createElement('a');
+            cancelbtn.classList.add('btn');
+            cancelbtn.textContent = '빈게시글삭제';
+            cancelbtn.setAttribute("href",`/delete/cancel/${cancelid}`) //setAttribute으로 속성설정가능
+            ex1.parentNode.appendChild(cancelbtn);//상위element에 버튼추가
+          });
+        }
+        //textarea#post-place-text 에서 required 옵션을 주면 무조껀 입력해야하기 때문에 null값 게시글 내용이
+        //없어지겠지만 공부를 위해 넣어봤다
+      script.
+        document.getElementById('post-place-text').addEventListener('keydown',function(e){
+          if(e.keyCode === 13){
+            e.preventDefault();   
+            }
+          });

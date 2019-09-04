@@ -1,0 +1,141 @@
+extends main
+
+block map
+  .timeline
+    #reply-form
+      .reply-content-group
+        label(for='reply-placename') 장소이름
+        #reply-placename= replycontent.name
+      .reply-content-group
+        label(for="") 사진
+        img#reply-place-pic(src=replycontent.img, alt="섬네일")
+      .reply-content-group1
+        label(for='reply-content') 내용
+        #reply-content= replycontent.content
+      .reply-content-group2
+        label(for='reply-rate') 평점
+          .starRev1
+            span.starR1
+            span.starR1
+            span.starR1
+            span.starR1
+            span.starR1
+            input#reply-rate(type="hidden" value= replycontent.rate)
+      .reply-content-group
+        label(for='reply-writer') 작성자
+        #reply-writer= replywriter.nick
+        input#reply-content-id(type="hidden" name='contentId' value=replycontent.id)
+        input#reply-content-writer(type="hidden" name='contentwriter' value=replycontent.userId)
+      .reply-content-group
+        label(for="") 좋아요
+        #reply-like= `${replycontent.like} 개`
+    i.fa.fa-thumbs-up(onclick='myFunction(this)')
+    strong#likecount
+    b#liketext 명이 좋아요를 선택했습니다
+    input(type="hidden" name='like')#likecontent
+    if replys
+      for reply in replys
+        .reply-write-group
+          input#reply-writerid(type="hidden" value=reply.userId)
+          input#reply-id(type="hidden" value=reply.id)
+          #reply-writer-name= `${reply.user.nick} 님이`
+          #reply-post-content= `${reply.reply} 덧글을 달았습니다`
+      if joinError
+        .error-message= joinError
+    form#reply-post-form(action="/post/reply", method="post")
+      .reply-post-group
+        label#reply-info(for="reply-post") 덧글입력
+        input(type="text" name='replyContent')#reply-post
+        input(type="hidden" name='contentId' value=replycontent.id)
+        input#likeid(type="hidden" name='replyuser' value=user.id)
+      button#join-btn.btn(type='submit') 덧글등록
+
+    
+    script.
+      function myFunction(x) {
+        x.classList.toggle("fa-thumbs-down");
+          if(document.querySelector(".fa-thumbs-down")){
+            document.getElementById("likecontent").value =false;
+            }else{
+              document.getElementById("likecontent").value =true;
+            }
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function(){
+          if(xhr.readyState === xhr.DONE){
+            if(xhr.status === 200){
+              let test = JSON.parse(xhr.responseText);
+              console.log('테스트',test,typeof(test));
+              let test1 = [];
+              for(let a=0; a<test.length;a++){
+                if(test[a].like === "true"){
+                  test1.push(test[a]);
+                }
+              }
+              console.log('배열길이',test1.length);
+              document.getElementById("likecount").innerText = test1.length;
+            }else{
+              console.error(xhr.responseText);
+            }
+          }
+        };
+        xhr.open('POST', 'http://localhost:8080/post/like');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+          like:document.getElementById("likecontent").value,
+          postId:document.getElementById("reply-content-id").value,
+          userId:document.getElementById("likeid").value,
+          }));
+      }
+    script.
+      var x = document.querySelectorAll("#reply-writerid");
+      var y = document.querySelectorAll("#reply-id");
+      var z = document.querySelectorAll(".reply-write-group");
+      for(let j=0;j<z.length;j++){
+        if(x[j].value === document.querySelector("#likeid").value){
+          var add = document.createElement('a');
+          add.classList.add('btn');
+          add.setAttribute("href",`/delete/reply/${y[j].value}`);
+          add.textContent = '삭제';
+          z[j].appendChild(add);
+        }
+      }
+    script.
+      if(document.querySelector("#reply-content-writer").value ===  document.querySelector("#likeid").value){
+        var deletepost = document.createElement('a');
+        deletepost.classList.add('btn');
+        deletepost.setAttribute("href",`/delete/content/${document.querySelector("#reply-content-id").value}`);
+        deletepost.textContent = '삭제';
+        document.querySelector("#reply-form").appendChild(deletepost);
+        //get방식 삭제말고 XMLHttpRequest restful 방식의 delete 기능을 써보자
+        //- deletepost.addEventListener('click', function(){
+        //-   var xhr = new XMLHttpRequest();
+        //-   xhr.onload = function(){
+        //-     var users = JSON.parse(xhr.responseText);
+        //-     if (xhr.readyState == 4 && xhr.status == "200") {
+        //-       console.table(users);
+        //-     } else {
+        //-       console.error(users);
+        //-     }
+        //-   };
+        //-   xhr.open('DELETE','http://localhost:8080/delete/content/'+document.querySelector("#reply-content-id").value);
+        //-   xhr.send(); 
+        //-   //http://localhost:8080/delete/content/ 이렇게 지정하면 원하는데로 나오는데...
+        //-   //그냥 /reply/delete/3을 하면 아래같이 주소가 나온다 이유는 모르겠다
+        //-   //주소 요청이 http:localhost:8080/수지구(인코딩된)/reply/delete/3 이렇게뜸 라우터처리모르겠음
+        //-   //원하는 주소로 요청하려면 정확하게 적어야 하는것 같다
+        //- });
+      }
+      if(document.querySelector("#reply-content-writer").value ===  document.querySelector("#likeid").value){
+        var deletepost = document.createElement('a');
+        deletepost.classList.add('btn');
+        deletepost.setAttribute("href",`/replyupdate/${document.querySelector("#reply-content-id").value}`);
+        deletepost.textContent = '수정';
+        document.querySelector("#reply-form").appendChild(deletepost);
+      }
+    script.
+      let star = document.querySelectorAll('.starR1');
+      console.log(star,typeof(star));
+      let count = document.getElementById('reply-rate').value;
+      for(let x=0;x<count;x++){
+          star[x].classList.add('on');
+      }

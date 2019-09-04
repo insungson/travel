@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  .timeline
+    if userinfo
+      form#join-form(action='/auth/user/update' method='post')
+        .input-group
+          label(for='join-email') 이메일
+          #join-email= userinfo.email
+          input(type='hidden' name='id' value=userinfo.id)
+        .input-group
+          label(for='join-nick') 닉네임
+          input#join-nick(type='text' name='nick' required value=userinfo.nick)
+        .input-group
+          label(for='join-password') 비밀번호
+          input#join-password(type='password' name='password' required placeholder="새로운 비번을 입력 하세요")
+        if joinError
+          .error-message= joinError
+        button#join-btn.btn(type='submit') 수정
+      form.delete-user(action=`/auth/user/delete/${userinfo.id}`, method="post")
+        input(type='hidden' name='id' value=userinfo.id)
+        button.btn(type='submit') 계정삭제
+    else
+      form#join-form(action='/auth/join' method='post')
+        .input-group
+          label(for='join-email') 이메일
+          input#join-email(type='email' name='email' required)
+        .input-group
+          label(for='join-nick') 닉네임
+          input#join-nick(type='text' name='nick' required)
+        .input-group
+          label(for='join-password') 비밀번호
+          input#join-password(type='password' name='password' required)
+        if joinError
+          .error-message= joinError
+        button#join-btn.btn(type='submit') 회원가입

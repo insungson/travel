@@ -1,0 +1,440 @@
+* {
+  box-sizing: border-box;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<프로필관련>>>>>>>>>>>>>>>>>>>>> */
+.profile-wrap {
+  width: 100%;
+  display: inline-block;
+  vertical-align: top;
+  margin: 10px 0;
+}
+
+@media screen and (min-width: 820px) {
+  .profile-wrap {
+    float: right;
+    width: 290px;
+    margin-bottom: 0;
+  }
+}
+.delete-user{
+  position: relative;
+  left: 40px;
+  top: -37px;
+}
+.profile {
+  text-align: left;
+  padding: 10px;
+  margin-right: 10px;
+  border-radius: 4px;
+  border: 1px solid silver;
+  background: lightcoral;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  width: 25%;
+  display: inline-block;
+}
+
+.input-group input {
+  width: 70%;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[id='search'],
+textarea {
+  border-radius: 4px;
+  height: 37px;
+  padding: 10px;
+  border: 1px solid silver;
+}
+
+/* 회원가입버튼 오른쪽으로 보냄 float 가 그기능을함 */
+#join {
+  float: right;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0 5px;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 4px;
+  background: white;
+  border: 1px solid silver;
+  color: crimson;
+  height: 37px;
+  line-height: 37px;
+  vertical-align: top;
+  font-size: 12px;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  min-width: 540px;
+}
+
+/* 800이하일때 픽셀고정됨 */
+@media screen and (min-width: 820px) {
+  .container {
+    width: 820px;
+    margin: 0 auto;
+  }
+}
+
+div {
+  display: block;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<목록관련>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+
+.list {
+  margin-top: 10px;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<위치검색관련>>>>>>>>>>>>>>>>>>>>>>>>> */
+.timeline {
+  margin-top: 10px;
+  width: 100%;
+  display: inline-block;
+  border-radius: 4px;
+  vertical-align: top;
+}
+
+@media screen and (min-width: 820px) {
+  .timeline {
+    width: 520px;
+  }
+}
+
+#search-form {
+  text-align: left;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid silver;
+  background: lightcoral;
+  height: 50px;
+  float: left;
+}
+
+select {
+  border-radius: 4px;
+  height: 37px;
+  padding: 5px 10px;
+  border: 1px solid silver;
+  vertical-align: bottom;
+}
+
+#margi{
+  margin-right: 5px;
+}
+
+#plz {
+  text-align: center;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid silver;
+  background: lightcoral;
+  height: 50px;
+  width: 480px;
+}
+
+#search-list {
+  position: absolute;
+  background: white;
+  margin-left: 90px;
+  z-index: 100;
+  cursor: pointer;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<<지도관련>>>>>>>>>>>>>>>>>>>>>>>>>> */
+#map {
+  margin-top: 10px;
+  width: 480px;
+  height: 80%;
+}
+
+#mapwindow {
+  height: 100%;
+}
+
+/* <<<<<<<<<<<<<<<<<<<<<<<<지도게시글 관련>>>>>>>>>>>>>>>>>>>>>>> */
+.h1-placename{
+  font-style: initial;
+  font-size: 20px;
+}
+
+.post-group {
+  margin-bottom: 15px;
+}
+
+.post-group label {
+  width: 25%;
+  display: inline-block;
+}
+
+.post-group input {
+  width: 70%;
+}
+
+#img-preview { 
+  max-width: 100%;
+  margin-left: 20px;
+}
+
+#img-label {
+  float: left;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid silver;
+  padding: 0 10px;
+  color: white;
+  font-size: 12px;
+  height: 37px;
+  line-height: 37px;
+  margin-left: 90px;
+  color: crimson;
+}
+
+#img { display: none; }
+
+#post-place{
+  margin-top: 20px;
+}
+
+#post-place-name{
+  float: right;
+  margin-right: 40px;
+  width: 150px;
+  text-align: center;
+}
+
+#post-place-text{
+  float: right;
+  margin-right: 30px;
+  height: 80px;
+}
+
+#post-place-star{
+  margin-top: 70px;
+}
+
+.starR{
+  background: url('http://miuu227.godohosting.com/images/icon/ico_review.png') no-repeat right 0;
+  background-size: auto 100%;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  text-indent: -9999px;
+  cursor: pointer;
+}
+.starR.on{background-position:0 0;}
+.starRev{
+  margin-left: 90px;
+}
+.starR1{
+  background: url('http://miuu227.godohosting.com/images/icon/ico_review.png') no-repeat right 0;
+  background-size: auto 100%;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  text-indent: -9999px;
+}
+.starR1.on{background-position:0 0;}
+.starRev1{
+  margin-left: 150px;
+}
+.fa {
+  font-size: 50px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.fa:hover {
+  color: darkblue;
+}
+
+/* <<<<<<<<<<<<<<<<<게시글 리스트>>>>>>>>>>>>>>>>>>>> */
+
+#place-list{
+  width: 170px;
+  background-color: lavenderblush;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.place-group{
+  margin-left: 10px;
+}
+
+#list-place-name{
+  float: right;
+  width: 170px;
+  text-align: center;
+}
+
+#list-place-rate{
+  float: right;
+  margin-right: 35px;
+}
+#list-place-like{
+  float: right;
+  margin-right: 35px;
+}
+#list-place-pic{
+  text-align: center;
+  width: 150px;
+}
+
+#list-place-button{
+  margin-left: 60px;
+}
+
+/* <<<<<<<<<<<<<<장소게시글관련>>>>>>>>>>>>>>>> */
+
+#reply-form{
+  background-color: lavender;
+  width: 450px;
+  border-radius: 10px;
+  border-color: silver;
+}
+
+#reply-placename{
+  float: right;
+  margin-right: 100px;
+  text-align: center;
+  width: 250px;
+}
+
+#reply-place-pic{
+  float: right;
+  margin-right: 100px;
+  max-width: 250px;
+  max-height: 250px;
+}
+
+.reply-content-group1{
+  margin-top: 240px;
+}
+
+#reply-content{
+  text-align: center;
+  margin-right: 100px;
+  float: right;
+  width: 250px;
+  height: 100px;
+}
+
+.reply-content-group2{
+  margin-top: 80px;
+}
+
+#reply-rate{
+  float: right;
+  margin-right: 100px;
+  text-align: center;
+  width: 250px;
+}
+
+#reply-writer{
+  float: right;
+  margin-right: 100px;
+  width: 250px;
+  text-align: center;
+}
+
+#reply-like{
+  float: right;
+    margin-right: 100px;
+    width: 250px;
+    text-align: center;
+}
+
+.reply-write-group{
+  margin-top: 15px;
+  background-color: khaki;
+  width: 450px;
+  border-radius: 10px;
+}
+
+#reply-post-content{
+  text-align: center;
+  width: 250px;
+}
+
+.reply-post-group{
+  margin-top: 20px;
+  height: 60px;
+  background-color: lavender;
+  width: 450px;
+  border-radius: 10px;
+}
+
+#reply-post{
+  margin: 10px;
+  width: 270px;
+}
+
+#reply-info{
+  margin: 10px;
+}
+
+/* <<<<<<<<<<<<<<내프로필관련>>>>>>>>>>>>>>>>>>>> */
+#myprofile{
+  background-color: lightgray;
+  width: 480px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+.myprofile-group{
+  margin-left: 30px;
+  margin-top: 10px;
+}
+#myprofile-name{
+  float: right;
+  width: 240px;
+  text-align: center;
+  margin-right: 40px;
+}
+#myprofile-skill{
+  float: right;
+  width: 240px;
+  text-align: center;
+  margin-right: 40px;
+}
+#myprofile-github{
+  float: right;
+  width: 240px;
+  text-align: center;
+  margin-right: 40px;
+}
+#myprofile-blog{
+  float: right;
+  width: 240px;
+  text-align: center;
+  margin-right: 40px;
+}
+#myprofile-pic{
+  width: 400px;
+  border-radius: 10px;
+  margin-left: 10px;
+}

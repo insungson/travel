@@ -1,0 +1,114 @@
+extends layout
+
+block content
+  .timeline
+    if user && user.id
+      form#search-form(method="GET")
+        span 장소검색서비스
+        input#search
+        select#type
+          option(value="") 없음
+          option(value="cafe") 카페
+          option(value="store") 상점
+          option(value="bank") 은행
+          option(value="school") 학교
+        button.btn(type='submit') 검색
+        button#loc-search-btn.btn(type='button') 주변검색
+        ul#search-list
+    else
+      #plz 본 서비스는 로그인 후 사용할 수 있습니다
+      if authcancel
+        #plz1= authcancel
+      div#myprofile
+        .myprofile-group
+          label(for="") Front-End Developer
+          #myprofile-name 손인성
+        .myprofile-group
+          label(for="") Available Languages
+          #myprofile-skill Javascript,NodeJS,HTML,CSS
+        .myprofile-group
+          label(for="") git-hub
+          a#myprofile-github(href="https://github.com/insungson?tab=repositories") Link
+        .myprofile-group
+          label(for="") Blog
+          a#myprofile-blog(href="https://isinvest1.blogspot.com/") Link
+        .myprofile-group
+          label(for="")
+          img#myprofile-pic(src='./image/mypic.jpg', alt="")
+  if user && user.id
+    block map
+
+    script.
+      var timer;
+      document.querySelector('#search').addEventListener('keyup', function (e) {
+        var xhr = new XMLHttpRequest();               
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+              var predictions = JSON.parse(xhr.responseText);
+              var ul = document.querySelector('#search-list');
+              ul.innerHTML = '';
+              predictions.forEach(function (pred) {
+                var li = document.createElement('li'); //예상 검색어들을 화면에 표시
+                li.textContent = pred.terms[0].value;
+                li.onclick = function () {
+                  location.href = '/search/' + pred.terms[0].value; //location.href는 현재URL을 바꿀수 있다
+                }
+                ul.appendChild(li);
+              });
+            } else {
+              console.error(xhr.responseText);
+            }
+          }
+        };
+        var query = this.value.trim(); //this는 #search 부분을 가르킨다
+        if (timer) {
+          clearTimeout(timer);
+        }
+        timer = setTimeout(function () {
+          if (query) {
+            xhr.open('GET', '/autocomplete/' + query);
+            xhr.send();
+          }
+        }, 200);
+      });
+
+      //검색어를 입력하지 않으면 폼 요청을 하지 않는다
+      document.querySelector('#search-form').addEventListener('submit', function (e) {
+        e.preventDefault();                         
+        if (!this.search.value || !this.search.value.trim()) {
+          this.search.focus();  //해당 element에 focus를 해준다 (해당 element만 선택한다, 효과를 한정시킬수있다)
+          return false;         //(blur()는 해당 element에서 focus를 해제한다)
+        }
+        if (this.type.value) {        //폼목록에서 select 부분을 type으로 설정했다 select로 type을 정할때
+          return location.href = '/search/' + this.search.value.trim() //이렇게 리턴된다
+            + '?type=' + this.type.value;   //this.search = 입력창, this.type = select 옵션의 선택부분
+        }
+        this.action = '/search/' + this.search.value.trim();//검색어를 입력한 경우
+        return this.submit();                               //폼 요청 주소(this.action)를 노드 라우터에 맞게
+      });
+      //주변검색 기능
+      document.querySelector('#loc-search-btn').addEventListener('click',function(e){
+        e.preventDefault();
+        if(navigator.geolocation){
+          navigator.geolocation.getCurrentPosition(function(position){
+            var search = document.querySelector('#search');
+            var type = document.querySelector('#type').value;
+            if(!search.value || !search.value.trim()){
+              search.focus();
+              return false;
+            }
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            location.href = '/search/'+search.value.trim()+'?lat='+lat+'&lng='+lng+'&type='+type;
+          }, function(){
+            alert('내 위치 확인 권한을 허용하세요');
+          }, {
+            enableHighAccuracy: false,
+            maximumAge: 0,
+            timeout: Infinity
+          });
+        }else{
+          alert('GPS를 지원하지 않습니다');
+        }
+      });

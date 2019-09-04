@@ -1,0 +1,76 @@
+extends main
+
+block map
+  h1= query + ' 검색 결과(' + results.length + ')'
+  #map
+  script.
+    var positions = [];
+  for result in results
+    script.
+      positions.push({                
+        lat: #{result.geometry.location.lat},
+        lng: #{result.geometry.location.lng},
+        name: '#{result.name}',
+        id: '#{result.place_id}'
+      });
+  script.
+    function initMap() {       //inirMap() 함수가 호출되면 new google.maps.Map(태그,옵션)으로 지도 렌더링한다
+      var center = positions[0] || { lat: 37.540705, lng: 126.956764 };//태그에 지도를 렌더링함
+      var map = new google.maps.Map(document.getElementById('map'), {//옵션은 지도설정을 한다
+        zoom: 13,
+        center: center
+      });
+
+      positions.forEach(function(pos) {     //검색 결과가 있을때 지도에 마커를 표시하는 방법이다
+        var marker = new google.maps.Marker({        //new google.maps.Marker(옵션)으로 마커를 표시할 수 있다
+          position: { lat: pos.lat, lng: pos.lng },//position : 마커를 표시할 위도,경도
+          map: map,                              //map: 마커를 표시할 지도를 가르킨다
+          title: pos.name                        //title: 마커에 마우스를 올렸을때, 표시할 툴팁 메시지 설정
+        });
+        var div = document.createElement('div');
+        var h1 = document.createElement('h1');
+        var button = document.createElement('button');
+        div.id = 'mapwindow';
+        h1.classList.add('h1-placename');
+        h1.textContent = pos.name;
+        button.classList.add('btn'); //classList.add() 로 css 클래스들을 해당 element에 넣는다(remove는 뺀다)
+        button.textContent = '장소 게시글 쓰기';
+        button.onclick = function () {      //즐겨찾기 버튼을 누를때 Ajax로 POST 요청을 서버에 보냄
+          var xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            if (xhr.status === 200) { //아래서 post 요청의 응답을 받으면 /로 이동한다 (chap4 참조)
+              console.log('값은',xhr.responseText);
+              var clickplace = JSON.parse(xhr.responseText);
+              //- document.getElementById('same-place-name').value = clickplace.name;
+              //- document.getElementById('same-place-id').value = clickplace.id;
+              // 위와 같은 방법으로 입력값을 한번에 받아서 한번에 입력하는것도 된다 레이아웃 특성상
+              // 이번엔 2번의 과정을 통해 게시글을 생성한다
+              //document.getElementById('same-place-userid').value = sameplace.userId; foreignkey이므로 안불러진다.
+              location.href = '/search/' + pos.name;
+            }
+          };
+          xhr.open('POST', '/location/' + pos.id + '/addplace');  //URI 방식(chap4 참조)의 주소로
+          xhr.setRequestHeader('Content-Type', 'application/json');//문자열 데이터를 넣어 보냄
+          xhr.send(JSON.stringify({                               //routes/index에서 확인
+            name: pos.name,
+            lat: pos.lat,
+            lng: pos.lng
+          }));
+        };
+        div.appendChild(h1);            //아래의 정보창에 h1,button 태그를 넣어준다(h1:장소,button:즐겨찾기)
+        div.appendChild(button);
+        var infowindow = new google.maps.InfoWindow({ //google.maps.InfoWindow(옵션) 은 정보창을 띄움 
+          content: div,  //content 옵션에 정보를 넣어주면 된다       maxWidth: 300, 숫자로 창사이즈 조절
+        });                 
+        marker.addListener('click', function () {
+          infowindow.open(map, marker); // 마커를 클릭시 툴창이 뜬다
+          //https://developers.google.com/maps/documentation/javascript/infowindows 에가면 자세히 볼수 있다
+        });
+      }); //아래의 script() 부분은 구글 지도 관련 스크립트를 불러오는 태그이다
+    }     //(API키, initMap의 콜백 리턴을 지도에 넣어서 렌더링한다.)
+  script( 
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js"
+      + "?key=AIzaSyCQLcDPNKpStLo5s-ReAX8vn8c1uSLSbE0&callback=initMap"
+  )

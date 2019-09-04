@@ -1,0 +1,37 @@
+extends main
+
+block map
+  if cancel
+    #cancel-mes= cancel
+  #map
+  script.
+    var positions = []; 
+  for result in results     
+    script.
+      positions.push({              
+        lat: #{result.lat},
+        lng: #{result.lng},
+        name: '#{result.name}',
+        id: '#{result.placeId}'
+      });
+  script.
+    function initMap() {
+      var center = { lat: 37.540705, lng: 126.956764 };
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: center
+      });
+      positions.forEach(function (pos) {
+        new google.maps.Marker({
+          position: { lat: pos.lat, lng: pos.lng },
+          map: map,
+          title: pos.name
+        });
+      });
+    }
+  script(
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js"
+      + "?key=AIzaSyCQLcDPNKpStLo5s-ReAX8vn8c1uSLSbE0&callback=initMap"
+  )

@@ -1,0 +1,96 @@
+extends main
+
+block map
+  .timeline
+    form#reply-form(action="/post/reply/update", method="post")
+      .reply-content-group
+        label(for='reply-placename') 장소이름
+        #reply-placename= replycontent.name
+        input(type="hidden" name='placename' value=replycontent.name)
+      .reply-content-group
+        label(for="") 사진
+        img#reply-place-pic(src=replycontent.img style='display: inline;' alt='미리보기')
+        input#img-url(type='hidden' name='url')
+      .reply-content-group1
+        label(for='reply-content') 내용
+        textarea#reply-content(name="placeContent", cols="30", rows="10" maxlength='150' required)
+        input#reply-content-value(type="hidden" maxlength=150 value=replycontent.content)
+      .reply-content-group2
+        label(for='reply-rate') 평점
+          .starRev1
+            span.starR
+            span.starR
+            span.starR
+            span.starR
+            span.starR
+            input#star-count(type="hidden" name='star')
+            input#star-count-db(type="hidden" value=replycontent.rate)
+      .reply-content-group
+        label(for='reply-writer') 작성자
+        #reply-writer= replycontent.user.nick
+        input#reply-content-id(type="hidden" name='contentId' value=replycontent.id)
+        input#reply-content-writer(type="hidden" name='contentwriter' value=replycontent.userId)
+      .reply-content-group
+        label(for="") 좋아요
+        #reply-like= `${replycontent.like} 개`
+      div
+        label#img-label(for="img") 사진업로드
+        input#img(type='file' accept='image/*')
+      button.btn(type='submit') 등록
+
+      script.
+        $('.starRev1 span').click(function(){
+          $(this).parent().children('span').removeClass('on');
+          $(this).addClass('on').prevAll('span').addClass('on');
+          return false;
+        });
+
+      script.
+        $('.starRev1 span').click(function(){
+          var x = document.querySelectorAll('.on')
+          console.log(x.length, typeof(x.length));
+          document.getElementById('star-count').value = x.length;
+        });
+        
+      script.
+        if (document.getElementById('img')) {//여기가 이미지를 업로드 하는 부분(여기는 사진만 올리는 부분임 글은 아님)
+          document.getElementById('img').addEventListener('change', function (e) {//change이벤트는 바뀌면 발생된다
+            var formData = new FormData();
+            formData.append('img', this.files[0]);
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+              if (xhr.status === 200) {
+                var url = JSON.parse(xhr.responseText).url;
+                document.getElementById('img-url').value = url;
+                document.getElementById('reply-place-pic').src = url;
+                document.getElementById('reply-place-pic').style.display = 'inline';
+              } else {
+                console.error(xhr.responseText);
+              }
+            };
+            xhr.open('POST', '/post/img');
+            xhr.send(formData);
+          });
+        }
+
+      script.
+        document.getElementById('reply-content').addEventListener('keydown',function(e){
+            if(e.keyCode === 13){
+                e.preventDefault();   
+            }
+        });
+        document.getElementById('reply-content').value = document.getElementById('reply-content-value').value
+      
+      script.
+        let star = document.querySelectorAll('.starR');
+        console.log(star,typeof(star));
+        let count = document.getElementById('star-count-db').value;
+        for(let x=0;x<count;x++){
+            star[x].classList.add('on');
+        }
+        if(document.getElementById('star-count').value === ''){
+          document.getElementById('star-count').value = document.getElementById('star-count-db').value;
+        }
+        if(document.getElementById('img-url').value === ''){
+          document.getElementById('img-url').value = document.getElementById('reply-place-pic').src;
+        }
