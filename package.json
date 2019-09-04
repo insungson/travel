@@ -4,10 +4,9 @@
   "description": "익스프레스로 만드는 SNS 서비스",
   "main": "app.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production PORT=80 node app",
-    "dev": "nodemon app"
+    "start": "nodemon app"
   },
-  "author": "ZeroCho",
+  "author": "son",
   "license": "MIT",
   "dependencies": {
     "@google/maps": "^0.5.5",

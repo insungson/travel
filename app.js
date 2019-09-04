@@ -26,11 +26,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('port', process.env.PORT || 8080);
 
-if(process.env.NODE_ENV === 'production'){
+if (process.env.NODE_ENV === 'production') {
   app.use(morgan('combined'));
   app.use(helmet());
   app.use(hpp());
-}else{
+} else {
   app.use(morgan('dev'));
 }
 app.use(express.static(path.join(__dirname, 'public')));
@@ -39,7 +39,6 @@ app.use('/image',express.static(path.join(__dirname,'image')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-
 const sessionOption = {
   resave: false,
   saveUninitialized: false,
@@ -48,16 +47,7 @@ const sessionOption = {
     httpOnly: true,
     secure: false,
   },
-  store: new RedisStore({
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    pass: process.env.REDIS_PASSWORD,
-    logErrors: true,
-  }),
 };
-if(process.env.NODE_ENV === 'production'){
-  sessionOption.proxy = true;
-}
 app.use(session(sessionOption));
 app.use(flash());
 app.use(passport.initialize());
@@ -71,7 +61,7 @@ app.use('/delete', deleteRouter);
 app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
-  logger.info('hello');
+  logger.info('hello'); //logger 객체를 만들어 메서드를 통해 심각도가 적용된 로그가 기록된다.
   logger.error(err.message);
   next(err);
 });
