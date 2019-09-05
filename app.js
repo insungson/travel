@@ -7,7 +7,8 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const helmet = require('helmet');
 const hpp = require('hpp');
-const RedisStore = require('connect-redis')(session);
+const redis = require('redis');
+let RedisStore = require('connect-redis')(session);
 require('dotenv').config();
 
 const pageRouter = require('./routes/page');
@@ -39,6 +40,12 @@ app.use('/image',express.static(path.join(__dirname,'image')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
+let client = redis.createClient({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+});
+client.on('error', console.log);
 const sessionOption = {
   resave: false,
   saveUninitialized: false,
@@ -47,7 +54,13 @@ const sessionOption = {
     httpOnly: true,
     secure: false,
   },
+  store: new RedisStore({client}),
 };
+if (process.env.NODE_ENV === 'production') {
+  sessionOption.proxy = true;
+  // sessionOption.cookie.secure = true; //cookie.secure 또한 https 적용이나 로드밸런싱(요청 부하 분산)
+  //                                       등을 위해 true로 바꿔준다.
+}
 app.use(session(sessionOption));
 app.use(flash());
 app.use(passport.initialize());
